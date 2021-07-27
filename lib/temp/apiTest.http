@@ -1,0 +1,21 @@
+POST https://mywebtest.in/complaint/api/api.php?action=register
+content-type: application/json
+
+{
+    "username": "sample1",
+    "email": "email1@gmail.com",
+    "password":"password",
+    "phone":"99999999908",
+    "address":"Address",
+    "city":"City"
+}
+
+###
+
+POST http://mywebtest.in/complaint/api/api.php?action=login
+content-type: application/json
+
+{ 
+    "username": "sample1",
+    "password":"password",
+}
