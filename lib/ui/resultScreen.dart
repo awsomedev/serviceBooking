@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:qask/complaintModel.dart';
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({Key key}) : super(key: key);
+  Complaint data;
+  ResultScreen({this.data});
 
   @override
   _ResultScreenState createState() => _ResultScreenState();
@@ -12,7 +14,7 @@ class _ResultScreenState extends State<ResultScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Service Type'),
+        title: Text(widget.data.service),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -29,7 +31,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   ),
                   Container(
                     child: Text(
-                      'PENDING',
+                      widget.data.complaintStatus.toUpperCase(),
                       style: TextStyle(fontSize: 12),
                     ),
                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -46,7 +48,7 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
               SizedBox(height: 15),
               Text(
-                'The question will, be displayed here',
+                widget.data.query,
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
               ),
               SizedBox(height: 20),
@@ -56,7 +58,7 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
               SizedBox(height: 15),
               Text(
-                'The answer will, be displayed here',
+                widget.data.solution ?? '',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 40),

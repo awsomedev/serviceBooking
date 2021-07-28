@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:qask/api/api.dart';
+import 'package:qask/complaintModel.dart';
 import 'package:qask/ui/resultScreen.dart';
 import 'package:qask/ui/spinner.dart';
+import 'package:qask/ui/splashscreen.dart';
 import 'package:qask/ui/submitScreen.dart';
 import 'package:qask/ui/widgets/custom_shape.dart';
 import 'package:qask/ui/widgets/responsive_ui.dart';
 import 'package:qask/utils/navigation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -34,101 +37,136 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Icon(Icons.add),
         backgroundColor: Colors.orange[200],
         onPressed: () {
-          Nav.navigate(context, SubmitScreen());
+          Nav.navigate(context, SubmitScreen()).then((value) {
+            setState(() {});
+          });
         },
       ),
-      body: FutureBuilder(
-        future: Api().getSolutions(),
-        builder: (context, snapshot) {
-          if(!snapshot.hasData){
-            return Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation(Colors.blueGrey[900]),
-              ),
-            );
-          }
-          return Container(
-            child: Stack(children: [
-              Column(
-                children: [
-                  clipShape(),
-                ],
-              ),
-              Column(
-                children: [
-                  SizedBox(
-                    height: _large
-                        ? _height / 4 - 10
-                        : (_medium ? _height / 3.75 : _height / 3.5) - 10,
-                  ),
-                  Expanded(
-                    child: ListView.separated(
-                        padding: EdgeInsets.symmetric(horizontal: 25),
-                        itemBuilder: (context, index) => GestureDetector(
-                          onTap: (){
-                            Nav.navigate(context, ResultScreen());
-                          },
-                                              child: PhysicalModel(
-                                color: Colors.white,
-                                shadowColor: Colors.orange[200],
-                                elevation: 3,
-                                borderRadius: BorderRadius.circular(15),
-                                child: Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Service type',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600)),
-                                          Text('Date',
-                                              style: TextStyle(fontSize: 12)),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
+      body: FutureBuilder<ComplaintModel>(
+          future: Api().getSolutions(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(Colors.blueGrey[900]),
+                ),
+              );
+            }
+            var complaints = snapshot.data.complaints;
+            return Container(
+              child: Stack(children: [
+                Column(
+                  children: [
+                    clipShape(),
+                  ],
+                ),
+                complaints.length == 0
+                    ? Center(
+                        child: Text(
+                          'No records',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: _large
+                                ? _height / 4 - 10
+                                : (_medium ? _height / 3.75 : _height / 3.5) -
+                                    10,
+                          ),
+                          Expanded(
+                            child: ListView.separated(
+                              padding: EdgeInsets.symmetric(horizontal: 25),
+                              itemBuilder: (context, index) => GestureDetector(
+                                onTap: () {
+                                  print('tapping');
+                                  Nav.navigate(
+                                      context,
+                                      ResultScreen(
+                                        data: complaints[index],
+                                      ));
+                                },
+                                child: PhysicalModel(
+                                  color: Colors.white,
+                                  shadowColor: Colors.orange[200],
+                                  elevation: 3,
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Container(
+                                    padding: EdgeInsets.all(15),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(complaints[index].service,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                            CircleAvatar(
+                                              radius: 15,
+                                              backgroundColor:
+                                                  Colors.orange[200],
+                                              child: Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 15,
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                            // Text('Date',
+                                            //     style: TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: Text(
+                                              complaints[index].query,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            )),
+                                            Container(
                                               child: Text(
-                                            'Question explained upto max 2 lined that is this only upto two lines are shown',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          )),
-                                          Container(
-                                            child: Text(
-                                              'PENDING',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 5, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                color: Colors.orange[200]),
-                                          )
-                                        ],
-                                      )
-                                    ],
+                                                complaints[index]
+                                                    .complaintStatus
+                                                    .toUpperCase(),
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 5, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  color: Colors.orange[200]),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                        ),
-                        separatorBuilder: (context, index) => SizedBox(height: 20),
-                        itemCount: 6),
-                  )
-                ],
-              ),
-            ]),
-          );
-        }
-      ),
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(height: 20),
+                              itemCount: complaints.length,
+                            ),
+                          )
+                        ],
+                      ),
+              ]),
+            );
+          }),
     );
   }
 
@@ -174,9 +212,36 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? _height / 30
                   : (_medium ? _height / 25 : _height / 20)),
           child: SafeArea(
-              child: Text(
-            'QAPP',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              child: Stack(
+            children: [
+              Center(
+                child: Text(
+                  'Online complaint\nmanagement system',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  PopupMenuButton(
+                      onSelected: (v) async {
+                        var pref = await SharedPreferences.getInstance();
+                        await pref.clear();
+                        Nav.navigateAll(context, SplashScreen());
+                      },
+                      itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: Text('Log out'),
+                              value: 1,
+                            )
+                          ]),
+                ],
+              )
+            ],
           )),
         ),
       ],

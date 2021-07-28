@@ -1,12 +1,14 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserService{
+class UserService {
   static setUserId(String userId) async {
     var pref = await SharedPreferences.getInstance();
     pref.setString('uid', userId);
   }
-   static getUserId() async {
+
+  static getUserId() async {
     var pref = await SharedPreferences.getInstance();
-    pref.getString('uid');
+
+    return pref.getString('uid');
   }
 }
