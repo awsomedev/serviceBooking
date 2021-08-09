@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:qask/api/api.dart';
 import 'package:qask/constants/constants.dart';
+import 'package:qask/ui/fogotPassword.dart';
 import 'package:qask/ui/homeScreen.dart';
 import 'package:qask/ui/spinner.dart';
 import 'package:qask/ui/widgets/custom_shape.dart';
 import 'package:qask/ui/widgets/responsive_ui.dart';
 import 'package:qask/ui/widgets/textformfield.dart';
 import 'package:qask/utils/navigation.dart';
-
 
 class SignInPage extends StatelessWidget {
   @override
@@ -24,7 +24,6 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-
   double _height;
   double _width;
   double _pixelRatio;
@@ -34,17 +33,15 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController passwordController = TextEditingController();
   GlobalKey<FormState> _key = GlobalKey();
 
-
-
   @override
   Widget build(BuildContext context) {
-     _height = MediaQuery.of(context).size.height;
-     _width = MediaQuery.of(context).size.width;
-     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-     _large =  ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-     _medium =  ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
+    _height = MediaQuery.of(context).size.height;
+    _width = MediaQuery.of(context).size.width;
+    _pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
+    _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return Spinner(
-          child: Material(
+      child: Material(
         child: Container(
           height: _height,
           width: _width,
@@ -56,7 +53,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 welcomeTextRow(),
                 signInTextRow(),
                 form(),
-                // forgetPassTextRow(),
+                forgetPassTextRow(),
                 SizedBox(height: _height / 12),
                 button(),
                 signUpTextRow(),
@@ -77,7 +74,9 @@ class _SignInScreenState extends State<SignInScreen> {
           child: ClipPath(
             clipper: CustomShapeClipper(),
             child: Container(
-              height:_large? _height/4 : (_medium? _height/3.75 : _height/3.5),
+              height: _large
+                  ? _height / 4
+                  : (_medium ? _height / 3.75 : _height / 3.5),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.orange[200], Colors.pinkAccent],
@@ -91,7 +90,9 @@ class _SignInScreenState extends State<SignInScreen> {
           child: ClipPath(
             clipper: CustomShapeClipper2(),
             child: Container(
-              height: _large? _height/4.5 : (_medium? _height/4.25 : _height/4),
+              height: _large
+                  ? _height / 4.5
+                  : (_medium ? _height / 4.25 : _height / 4),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.orange[200], Colors.pinkAccent],
@@ -102,11 +103,14 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         Container(
           alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(top: _large? _height/30 : (_medium? _height/25 : _height/20)),
+          margin: EdgeInsets.only(
+              top: _large
+                  ? _height / 30
+                  : (_medium ? _height / 25 : _height / 20)),
           child: Image.asset(
             'assets/images/login.png',
-            height: _height/3.5,
-            width: _width/3.5,
+            height: _height / 3.5,
+            width: _width / 3.5,
           ),
         ),
       ],
@@ -122,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
             "Welcome",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: _large? 60 : (_medium? 50 : 40),
+              fontSize: _large ? 60 : (_medium ? 50 : 40),
             ),
           ),
         ],
@@ -139,7 +143,7 @@ class _SignInScreenState extends State<SignInScreen> {
             "Sign in to your account",
             style: TextStyle(
               fontWeight: FontWeight.w200,
-              fontSize: _large? 20 : (_medium? 17.5 : 15),
+              fontSize: _large ? 20 : (_medium ? 17.5 : 15),
             ),
           ),
         ],
@@ -150,9 +154,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget form() {
     return Container(
       margin: EdgeInsets.only(
-          left: _width / 12.0,
-          right: _width / 12.0,
-          top: _height / 15.0),
+          left: _width / 12.0, right: _width / 12.0, top: _height / 15.0),
       child: Form(
         key: _key,
         child: Column(
@@ -171,9 +173,8 @@ class _SignInScreenState extends State<SignInScreen> {
       keyboardType: TextInputType.emailAddress,
       textEditingController: emailController,
       icon: Icons.email,
-      hint: "Email ID",
+      hint: "Email ID / Username",
     );
-
   }
 
   Widget passwordTextFormField() {
@@ -194,22 +195,25 @@ class _SignInScreenState extends State<SignInScreen> {
         children: <Widget>[
           Text(
             "Forgot your password?",
-            style: TextStyle(fontWeight: FontWeight.w400,fontSize: _large? 14: (_medium? 12: 10)),
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: _large ? 14 : (_medium ? 12 : 10)),
           ),
           SizedBox(
             width: 5,
           ),
           GestureDetector(
             onTap: () async {
-              showSpinner();
-              var d = await Api().signIn(
-                email: emailController.text,
-                password: passwordController.text,
-              );
-              hideSpinner();
-              if(d.status){
-                Nav.navigate(context, HomeScreen());
-              }
+              Nav.navigate(context, ForgotScreen());
+              // showSpinner();
+              // var d = await Api().signIn(
+              //   email: emailController.text,
+              //   password: passwordController.text,
+              // );
+              // hideSpinner();
+              // if (d.status) {
+              //   Nav.navigate(context, HomeScreen());
+              // }
             },
             child: Text(
               "Recover",
@@ -226,19 +230,23 @@ class _SignInScreenState extends State<SignInScreen> {
     return RaisedButton(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-      onPressed: () {
-        Nav.navigateAll(context, HomeScreen());
-          // print("Routing to your account");
-          // Scaffold
-          //     .of(context)
-          //     .showSnackBar(SnackBar(content: Text('Login Successful')));
-
+      onPressed: () async {
+        showSpinner();
+        var d = await Api().signIn(
+          userName: emailController.text,
+          password: passwordController.text,
+        );
+        hideSpinner();
+        buildToast(d.msg);
+        if (d.status) {
+          Nav.navigate(context, HomeScreen());
+        }
       },
       textColor: Colors.white,
       padding: EdgeInsets.all(0.0),
       child: Container(
         alignment: Alignment.center,
-        width: _large? _width/4 : (_medium? _width/3.75: _width/3.5),
+        width: _large ? _width / 4 : (_medium ? _width / 3.75 : _width / 3.5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
           gradient: LinearGradient(
@@ -246,7 +254,8 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
         ),
         padding: const EdgeInsets.all(12.0),
-        child: Text('SIGN IN',style: TextStyle(fontSize: _large? 14: (_medium? 12: 10))),
+        child: Text('SIGN IN',
+            style: TextStyle(fontSize: _large ? 14 : (_medium ? 12 : 10))),
       ),
     );
   }
@@ -259,7 +268,9 @@ class _SignInScreenState extends State<SignInScreen> {
         children: <Widget>[
           Text(
             "Don't have an account?",
-            style: TextStyle(fontWeight: FontWeight.w400,fontSize: _large? 14: (_medium? 12: 10)),
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: _large ? 14 : (_medium ? 12 : 10)),
           ),
           SizedBox(
             width: 5,
@@ -272,12 +283,13 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Text(
               "Sign up",
               style: TextStyle(
-                  fontWeight: FontWeight.w800, color: Colors.orange[200], fontSize: _large? 19: (_medium? 17: 15)),
+                  fontWeight: FontWeight.w800,
+                  color: Colors.orange[200],
+                  fontSize: _large ? 19 : (_medium ? 17 : 15)),
             ),
           )
         ],
       ),
     );
   }
-
 }

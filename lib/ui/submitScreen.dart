@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:qask/api/api.dart';
 import 'package:qask/constants/itemModels.dart';
 import 'package:qask/ui/spinner.dart';
+import 'package:qask/utils/navigation.dart';
 
 class SubmitScreen extends StatefulWidget {
   const SubmitScreen({Key key}) : super(key: key);
@@ -12,7 +16,42 @@ class SubmitScreen extends StatefulWidget {
 
 class _SubmitScreenState extends State<SubmitScreen> {
   String selectedService;
-  TextEditingController quesry = TextEditingController();
+  TextEditingController query = TextEditingController();
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      Fluttertoast.showToast(msg: 'Location services are disabled.');
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        Fluttertoast.showToast(msg: 'Location permissions are denied');
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      Fluttertoast.showToast(
+          msg:
+              'Location permissions are permanently denied, we cannot request permissions.');
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +121,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                       showSpinner();
                       var d = Api().submitSolutions(
                         service: selectedService,
-                        query: quesry.text,
+                        query: query.text,
                         location: 'locatiomn'
                       );
                       hideSpinner();
