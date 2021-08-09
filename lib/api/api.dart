@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:qask/api/userService.dart';
+import 'package:qask/constants/itemModels.dart';
 
 class Status {
   String msg;
@@ -93,6 +94,19 @@ class Api {
       return Status(msg: 'Error occured', status: false);
     }
   }
+Future<ItemModel> getService() async {
+    var userId = await UserService.getUserId();
+    print('working');
+    var response = await http.get(getUri('api.php?action=getIssues'),);
+    try {
+      print(response.body);
+      return itemModelFromJson(response.body);
+    } catch (e) {
+      return ItemModel(issues: []);
+    }
+  }
+
+
 
 Future<Status> getSolutions() async {
     var userId = await UserService.getUserId();
