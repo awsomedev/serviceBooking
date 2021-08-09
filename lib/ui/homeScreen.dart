@@ -77,89 +77,99 @@ class _HomeScreenState extends State<HomeScreen> {
                                     10,
                           ),
                           Expanded(
-                            child: ListView.separated(
-                              padding: EdgeInsets.symmetric(horizontal: 25),
-                              itemBuilder: (context, index) => GestureDetector(
-                                onTap: () {
-                                  print('tapping');
-                                  Nav.navigate(
-                                      context,
-                                      ResultScreen(
-                                        data: complaints[index],
-                                      ));
-                                },
-                                child: PhysicalModel(
-                                  color: Colors.white,
-                                  shadowColor: Colors.orange[200],
-                                  elevation: 3,
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Container(
-                                    padding: EdgeInsets.all(15),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(complaints[index].service,
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                            CircleAvatar(
-                                              radius: 15,
-                                              backgroundColor:
-                                                  Colors.orange[200],
-                                              child: Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 15,
-                                                color: Colors.black,
-                                              ),
-                                            )
-                                            // Text('Date',
-                                            //     style: TextStyle(fontSize: 12)),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                await Api().getSolutions();
+                                setState(() {});
+                                return true;
+                              },
+                              child: ListView.separated(
+                                padding: EdgeInsets.symmetric(horizontal: 25),
+                                itemBuilder: (context, index) =>
+                                    GestureDetector(
+                                  onTap: () {
+                                    print('tapping');
+                                    Nav.navigate(
+                                        context,
+                                        ResultScreen(
+                                          data: complaints[index],
+                                        ));
+                                  },
+                                  child: PhysicalModel(
+                                    color: Colors.white,
+                                    shadowColor: Colors.orange[200],
+                                    elevation: 3,
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Container(
+                                      padding: EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(complaints[index].service,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                              CircleAvatar(
+                                                radius: 15,
+                                                backgroundColor:
+                                                    Colors.orange[200],
+                                                child: Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 15,
+                                                  color: Colors.black,
+                                                ),
+                                              )
+                                              // Text('Date',
+                                              //     style: TextStyle(fontSize: 12)),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Text(
+                                                complaints[index].query,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              )),
+                                              Container(
                                                 child: Text(
-                                              complaints[index].query,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            )),
-                                            Container(
-                                              child: Text(
-                                                complaints[index]
-                                                    .complaintStatus
-                                                    .toUpperCase(),
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 5, horizontal: 10),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          100),
-                                                  color: Colors.orange[200]),
-                                            )
-                                          ],
-                                        )
-                                      ],
+                                                  complaints[index]
+                                                      .complaintStatus
+                                                      .toUpperCase(),
+                                                  style:
+                                                      TextStyle(fontSize: 12),
+                                                ),
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 5,
+                                                    horizontal: 10),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                    color: Colors.orange[200]),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
+                                separatorBuilder: (context, index) =>
+                                    SizedBox(height: 20),
+                                itemCount: complaints.length,
                               ),
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(height: 20),
-                              itemCount: complaints.length,
                             ),
                           )
                         ],
