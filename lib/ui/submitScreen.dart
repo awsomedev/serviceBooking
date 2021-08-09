@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:qask/api/api.dart';
+import 'package:qask/constants/itemModels.dart';
 import 'package:qask/ui/spinner.dart';
 import 'package:qask/utils/navigation.dart';
 
@@ -53,108 +54,98 @@ class _SubmitScreenState extends State<SubmitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Spinner(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Write your complaint'),
-        ),
-        body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25),
-            child: Column(
-              children: [
-                SizedBox(height: 30),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange[200],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                        value: selectedService,
-                        isExpanded: true,
-                        hint: Text('Select issue'),
-                        onChanged: (s) {
-                          setState(() {
-                            selectedService = s;
-                          });
-                        },
-                        items: [
-                          'Street Light',
-                          'Water pipe leakage',
-                          'Rain water drainage',
-                          'Road',
-                          'Computer Sevice',
-                        ]
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e),
-                                ))
-                            .toList()),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Expanded(
-                  child: TextFormField(
-                    expands: true,
-                    minLines: null,
-                    maxLines: null,
-                    controller: query,
-                    textAlignVertical: TextAlignVertical.top,
-                    cursorColor: Colors.orange[200],
-                    decoration: InputDecoration(
-                      hintText: 'Ask you question',
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.orange[200])),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.orange[200])),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 30),
-                RaisedButton(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0)),
-                  onPressed: () async {
-                    print('submit working');
-                    showSpinner();
-                    var location = await _determinePosition();
-                    final coordinates =
-                        new Coordinates(location.latitude, location.longitude);
-                    var addresses = await Geocoder.local
-                        .findAddressesFromCoordinates(coordinates);
-                    var first = addresses.first;
-                    var d = await Api().submitSolutions(
-                      service: selectedService,
-                      query: query.text,
-                      location: '${first.adminArea}, ${first.addressLine}',
-                    );
-                    hideSpinner();
-                    buildToast(d.msg);
-                    Navigator.pop(context);
-                  },
-                  // textColor: Colors.white,
-                  padding: EdgeInsets.all(0.0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: 120,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ask you Question'),
+      ),
+      body: FutureBuilder<ItemModel>(
+        future: Api().getService(),
+        builder: (context, snapshot) {
+          if(!snapshot.hasData){
+            return Center(child: CircularProgressIndicator(),);
+          }
+          return Container(
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                children: [
+                  SizedBox(height: 30),
+                  Container(
                     decoration: BoxDecoration(
                       color: Colors.orange[200],
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      // gradient: LinearGradient(
-                      //   colors: <Color>[Colors.orange[200], Colors.pinkAccent],
-                      // ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text('SUBMIT', style: TextStyle(fontSize: 14)),
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                          value: selectedService,
+                          isExpanded: true,
+                          hint: Text('Select service'),
+                          onChanged: (s) {
+                            setState(() {
+                              selectedService = s;
+                            });
+                          },
+                          items: snapshot.data.issues
+                              .map((e) => DropdownMenuItem(
+                                    value: e.name,
+                                    child: Text(e.name),
+                                  ))
+                              .toList()),
+                    ),
                   ),
-                ),
-                SizedBox(height: 50),
-              ],
-            )),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: TextFormField(
+                      expands: true,
+                      minLines: null,
+                      maxLines: null,
+                      textAlignVertical: TextAlignVertical.top,
+                      cursorColor: Colors.orange[200],
+                      decoration: InputDecoration(
+                        hintText: 'Ask you question',
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: Colors.orange[200])),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: Colors.orange[200])),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  RaisedButton(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0)),
+                    onPressed: () {
+                      showSpinner();
+                      var d = Api().submitSolutions(
+                        service: selectedService,
+                        query: query.text,
+                        location: 'locatiomn'
+                      );
+                      hideSpinner();
+                    },
+                    // textColor: Colors.white,
+                    padding: EdgeInsets.all(0.0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 120,
+                      decoration: BoxDecoration(
+                       color: Colors.orange[200],
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        // gradient: LinearGradient(
+                        //   colors: <Color>[Colors.orange[200], Colors.pinkAccent],
+                        // ),
+                      ),
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text('SUBMIT', style: TextStyle(fontSize: 14)),
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                ],
+              ));
+        }
       ),
     );
   }
