@@ -1,16 +1,15 @@
-# qask
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# QASK  
+  
+  Flutter project  
+  Install flutter steps are shown in https://flutter.dev/docs/get-started/install  
+    
+  Go to terminal  
+    -> cd "project directory"  
+    -> flutter pub get  
+    -> flutter run
+    
+  Select android emulator or physical device to run  
+  In mac you can run in ios simulator or xcode  
+  You can also run app in Vscode or android studio or xcode depending upon the Operating system  
+  Watch this vedio for better understanding  https://www.youtube.com/watch?v=WepTtmHKcoI 
+  
